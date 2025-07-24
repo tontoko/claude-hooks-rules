@@ -2,6 +2,8 @@
 
 Claude Codeの動作を改善するためのHookスクリプト集です。TDD（テスト駆動開発）の徹底、曖昧な指示の明確化、コンテキストの保持などを自動化します。
 
+さらに、特定のキーワードで有効化できる特殊モードも提供しています。
+
 ## 機能
 
 ### 1. ワークフロールールの自動適用
@@ -17,6 +19,42 @@ Claude Codeの動作を改善するためのHookスクリプト集です。TDD�
 ### 3. コードレビューの促進
 - 機能完成時に俯瞰的な視点でのレビューを促す
 - 冗長なコードや改善可能な設計を指摘
+
+### 4. モード管理システム
+
+統一的なモード管理システムで、複数のモードを同時に有効化できます。
+
+#### モードの操作
+
+```
+# モードを有効化（既存のモードを置き換え）
+mode: explain
+mode: explain debug test
+
+# モードを追加（既存のモードに追加）
+mode on: explain
+mode on: debug test
+
+# モードを無効化（特定のモードのみ）
+mode off: explain
+mode off: debug test
+
+# すべてのモードを無効化
+mode: off
+mode clear
+mode reset
+
+# 現在のモードを確認
+mode list
+mode status
+```
+
+#### 利用可能なモード
+
+##### 解説モード (explain/explanation)
+- コード編集時に初心者向けの解説ドキュメントを自動生成
+- `docs/code-explanation/`ディレクトリに保存
+- なぜその実装方法を選んだか、設計の意図を記録
 
 ## インストール
 
@@ -85,7 +123,9 @@ claude-hooks-rules/
 └── hooks/
     ├── workflow_instructions.py # ワークフロールールとコンテキスト管理
     ├── preserve_context.py      # Compact時のコンテキスト保存
-    └── review_reminder.py       # コードレビューリマインダー
+    ├── review_reminder.py       # コードレビューリマインダー
+    ├── code_explainer.py        # 解説モード
+    └── mode_manager.py          # 統一モード管理システム
 ```
 
 ## カスタマイズ
@@ -99,6 +139,7 @@ claude-hooks-rules/
 デフォルトでは直近3件の指示を保存しますが、以下のファイルで変更可能です：
 - `workflow_instructions.py`: `save_current_prompt()`関数内の`[:3]`
 - `preserve_context.py`: `extract_recent_prompts()`関数の`count`パラメータ
+
 
 ## トラブルシューティング
 

@@ -3,6 +3,8 @@
 import json
 import sys
 from pathlib import Path
+import importlib.util
+import os
 
 def get_workflow_rules():
     """基本的なワークフロールール"""
@@ -71,6 +73,30 @@ def save_current_prompt(prompt_text):
         with open(context_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
+def load_explanation_mode_rules():
+    """解説モードがアクティブな場合ルールを取得"""
+    code_explainer_path = Path(__file__).parent / "code_explainer.py"
+    if code_explainer_path.exists():
+        spec = importlib.util.spec_from_file_location("code_explainer", code_explainer_path)
+        module = importlib.util.module_from_spec(spec)
+        try:
+            spec.loader.exec_module(module)
+            if hasattr(module, "is_explanation_mode_active") and module.is_explanation_mode_active():
+                if hasattr(module, "get_explanation_rules"):
+                    return module.get_explanation_rules()
+        except:
+            pass
+    
+    return ""
+
+def process_mode_updates(input_data):
+    """モード更新処理を実行"""
+    # mode_managerを通じて全モードを管理
+    from mode_manager import ModeManager
+    manager = ModeManager()
+    user_prompt = input_data.get("prompt", "")
+    return manager.update_modes(user_prompt)
+
 def main():
     try:
         # stdinからJSONデータを読み込む
@@ -79,15 +105,27 @@ def main():
 
         # 現在のプロンプトを保存
         save_current_prompt(user_prompt)
+        
+        # モード更新をチェック
+        mode_message = process_mode_updates(input_data)
+        if mode_message:
+            print(mode_message)
+            
+        # code_explainerを別プロセスで実行（ルール表示のため）
+        code_explainer_path = Path(__file__).parent / "code_explainer.py"
+        if code_explainer_path.exists():
+            os.system(f"echo '{json.dumps(input_data)}' | python3 {code_explainer_path}")
+        
     except:
         # JSONの読み込みに失敗しても続行
         pass
 
     rules = get_workflow_rules()
     context = get_recent_context()
+    explanation_rules = load_explanation_mode_rules()
 
     # プロンプトに追加する内容を出力
-    print(rules + context)
+    print(rules + context + explanation_rules)
 
     sys.exit(0)
 
