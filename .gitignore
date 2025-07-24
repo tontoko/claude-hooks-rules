@@ -16,7 +16,12 @@ ENV/
 
 # Hook generated files
 hook_context.json
+hook_contexts.json
 hook_state.json
+active_modes.json
+explanation_mode.json
+reviewer_mode.json
+learning_mode.json
 
 # OS
 .DS_Store

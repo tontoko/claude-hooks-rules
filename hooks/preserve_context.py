@@ -41,17 +41,47 @@ def extract_recent_prompts(transcript_path, count=3):
     return recent_prompts
 
 def save_context(recent_prompts):
-    """コンテキストを保存"""
-    context_file = Path.home() / ".claude" / "hook_context.json"
-    context_file.parent.mkdir(exist_ok=True)
+    """コンテキストを保存（セッション管理版）"""
+    # workflow_instructions.pyと同じロジックを使用
+    import hashlib
+    import os
     
-    context = {
+    # セッションIDを生成
+    project_dir = os.getcwd()
+    ppid = os.getppid()
+    session_string = f"{project_dir}_{ppid}"
+    session_id = hashlib.md5(session_string.encode()).hexdigest()[:12]
+    
+    # 全コンテキストを読み込み
+    context_file = Path.home() / ".claude" / "hook_contexts.json"
+    if context_file.exists():
+        try:
+            with open(context_file, 'r', encoding='utf-8') as f:
+                all_contexts = json.load(f)
+        except:
+            all_contexts = {}
+    else:
+        all_contexts = {}
+    
+    # セッションデータを更新
+    if session_id not in all_contexts:
+        all_contexts[session_id] = {}
+    
+    all_contexts[session_id].update({
         "recent_prompts": recent_prompts,
-        "saved_at": datetime.now().isoformat()
-    }
+        "saved_at": datetime.now().isoformat(),
+        "last_access": datetime.now().isoformat()
+    })
     
+    # 最新100セッションのみ保持
+    if len(all_contexts) > 100:
+        sorted_sessions = sorted(all_contexts.items(), key=lambda x: x[1].get('last_access', ''), reverse=True)
+        all_contexts = dict(sorted_sessions[:100])
+    
+    # 保存
+    context_file.parent.mkdir(exist_ok=True)
     with open(context_file, 'w', encoding='utf-8') as f:
-        json.dump(context, f, ensure_ascii=False, indent=2)
+        json.dump(all_contexts, f, ensure_ascii=False, indent=2)
 
 def main():
     # PreCompact イベントデータを読み込む
