@@ -31,6 +31,12 @@ def get_workflow_rules():
    - プロジェクトにdesign docsなどのドキュメントがあるか確認
    - 重要な意思決定は記録
 
+5. モード管理コマンドへの応答
+   - モードコマンドが入力された場合、フックが自動的に処理して結果を表示します
+   - 【重要】フックが出力した内容（【利用可能なモード】【アクティブなモード】など）をそのまま表示してください
+   - 追加の説明や独自の解釈は不要です
+   - フックの出力を無視して独自の応答を作らないでください
+
 これらのルールに従って、あなたの判断で適切に対応してください。
 """
 
@@ -175,9 +181,14 @@ def main():
     rules = get_workflow_rules()
     context = get_recent_context()
     explanation_rules = load_explanation_mode_rules()
+    
+    # モードコマンドが実行された場合の追加指示
+    mode_command_notice = ""
+    if mode_message:
+        mode_command_notice = "\n\n【モードコマンド実行結果】\n上記のフック出力をそのまま表示してください。追加の説明は不要です。\n"
 
     # プロンプトに追加する内容を出力
-    print(rules + context + explanation_rules)
+    print(rules + context + explanation_rules + mode_command_notice)
 
     sys.exit(0)
 

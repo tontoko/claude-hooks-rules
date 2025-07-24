@@ -79,10 +79,22 @@ class ModeManager:
             return "【全モード解除】\n通常のコーディングモードに戻りました。"
             
         elif command["action"] == "list":
+            # 利用可能なモード一覧
+            available_modes = {
+                "explain/explanation": "コード編集時に初心者向けの解説ドキュメントを自動生成"
+            }
+            
+            result = "【利用可能なモード】\n"
+            for mode, description in available_modes.items():
+                result += f"- {mode}: {description}\n"
+            
+            result += "\n【現在アクティブなモード】\n"
             if current_modes:
-                return f"【アクティブなモード】\n" + ", ".join(current_modes)
+                result += ", ".join(current_modes)
             else:
-                return "【アクティブなモード】\nなし（通常モード）"
+                result += "なし（通常モード）"
+            
+            return result
                 
         elif command["action"] == "set":
             modes_data["modes"] = command["modes"]
