@@ -1,0 +1,34 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /Users/user-name/claude-hooks-rules/hooks/workflow_instructions.py"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /Users/user-name/claude-hooks-rules/hooks/preserve_context.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /Users/user-name/claude-hooks-rules/hooks/review_reminder.py"
+          }
+        ]
+      }
+    ]
+  }
+}
