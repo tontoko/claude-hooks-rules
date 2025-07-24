@@ -46,11 +46,23 @@ def save_context(recent_prompts):
     import hashlib
     import os
     
-    # セッションIDを生成
+    # Claude CodeのセッションIDを取得
     project_dir = os.getcwd()
-    ppid = os.getppid()
-    session_string = f"{project_dir}_{ppid}"
-    session_id = hashlib.md5(session_string.encode()).hexdigest()[:12]
+    escaped_dir = project_dir.replace('/', '-')
+    claude_project_dir = Path.home() / ".claude" / "projects" / escaped_dir
+    
+    session_id = None
+    if claude_project_dir.exists():
+        jsonl_files = list(claude_project_dir.glob("*.jsonl"))
+        if jsonl_files:
+            latest_file = max(jsonl_files, key=lambda f: f.stat().st_mtime)
+            session_id = latest_file.stem
+    
+    # フォールバック
+    if not session_id:
+        ppid = os.getppid()
+        session_string = f"{project_dir}_{ppid}"
+        session_id = hashlib.md5(session_string.encode()).hexdigest()[:12]
     
     # 全コンテキストを読み込み
     context_file = Path.home() / ".claude" / "hook_contexts.json"

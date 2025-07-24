@@ -35,9 +35,25 @@ def get_workflow_rules():
 """
 
 def get_session_id():
-    """現在のセッションIDを取得"""
-    # プロジェクトディレクトリとプロセスIDからセッション識別子を生成
+    """Claude CodeのセッションIDを取得"""
+    # プロジェクトディレクトリをエスケープ
     project_dir = os.getcwd()
+    escaped_dir = project_dir.replace('/', '-')
+    
+    # Claude履歴ディレクトリ
+    claude_project_dir = Path.home() / ".claude" / "projects" / escaped_dir
+    
+    if claude_project_dir.exists():
+        # 最新の.jsonlファイルを探す
+        jsonl_files = list(claude_project_dir.glob("*.jsonl"))
+        if jsonl_files:
+            # 最新のファイルを取得
+            latest_file = max(jsonl_files, key=lambda f: f.stat().st_mtime)
+            # ファイル名からセッションIDを取得
+            session_id = latest_file.stem
+            return session_id
+    
+    # フォールバック: プロセスIDベース
     ppid = os.getppid()
     session_string = f"{project_dir}_{ppid}"
     return hashlib.md5(session_string.encode()).hexdigest()[:12]
