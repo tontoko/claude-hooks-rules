@@ -20,7 +20,12 @@ Claude Codeの動作を改善するためのHookスクリプト集です。TDD�
 - 機能完成時に俯瞰的な視点でのレビューを促す
 - 冗長なコードや改善可能な設計を指摘
 
-### 4. モード管理システム
+### 4. カスタムサブエージェントシステム
+- メインオーケストレーターとして動作し、9つの専門サブエージェントを管理
+- 各エージェントが並列で独立して動作し、メインに報告
+- 要件分析、設計、実装、レビュー、テスト、デプロイ、ドキュメント、パフォーマンス、セキュリティの専門エージェント
+
+### 5. モード管理システム
 
 統一的なモード管理システムで、複数のモードを同時に有効化できます。
 
@@ -120,12 +125,22 @@ cp example.settings.json ~/.claude/settings.json
 claude-hooks-rules/
 ├── README.md                    # このファイル
 ├── example.settings.json        # Claude Code設定ファイルのサンプル
-└── hooks/
-    ├── workflow_instructions.py # ワークフロールールとコンテキスト管理
-    ├── preserve_context.py      # Compact時のコンテキスト保存
-    ├── review_reminder.py       # コードレビューリマインダー
-    ├── code_explainer.py        # 解説モード
-    └── mode_manager.py          # 統一モード管理システム
+├── hooks/
+│   ├── workflow_instructions.py # ワークフロールールとコンテキスト管理
+│   ├── preserve_context.py      # Compact時のコンテキスト保存
+│   ├── review_reminder.py       # コードレビューリマインダー
+│   ├── code_explainer.py        # 解説モード
+│   └── mode_manager.py          # 統一モード管理システム
+└── agents/                      # カスタムサブエージェント
+    ├── requirements_agent.py    # 要件分析エージェント
+    ├── design_agent.py          # 設計エージェント
+    ├── implementation_agent.py  # 実装エージェント
+    ├── review_agent.py          # レビューエージェント
+    ├── test_agent.py            # テストエージェント
+    ├── deploy_agent.py          # デプロイエージェント
+    ├── docs_agent.py            # ドキュメントエージェント
+    ├── performance_agent.py     # パフォーマンスエージェント
+    └── security_agent.py        # セキュリティエージェント
 ```
 
 ## カスタマイズ
