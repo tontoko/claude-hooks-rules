@@ -6,6 +6,10 @@
           {
             "type": "command",
             "command": "python3 /Users/user-name/claude-hooks-rules/hooks/workflow_instructions.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 /Users/user-name/claude-hooks-rules/hooks/mode_manager.py"
           }
         ]
       }
@@ -29,6 +33,19 @@
           }
         ]
       }
+    ]
+  },
+  "user_hooks": {
+    "on_request": [
+      "/Users/user-name/claude-hooks-rules/agents/requirements_agent.py",
+      "/Users/user-name/claude-hooks-rules/agents/design_agent.py",
+      "/Users/user-name/claude-hooks-rules/agents/implementation_agent.py",
+      "/Users/user-name/claude-hooks-rules/agents/review_agent.py",
+      "/Users/user-name/claude-hooks-rules/agents/test_agent.py",
+      "/Users/user-name/claude-hooks-rules/agents/deploy_agent.py",
+      "/Users/user-name/claude-hooks-rules/agents/docs_agent.py",
+      "/Users/user-name/claude-hooks-rules/agents/performance_agent.py",
+      "/Users/user-name/claude-hooks-rules/agents/security_agent.py"
     ]
   }
 }
