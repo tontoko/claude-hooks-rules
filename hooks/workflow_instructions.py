@@ -130,12 +130,37 @@ def save_all_contexts(data):
     with open(context_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
+def is_after_compact():
+    """compact後のセッションかどうかを判定"""
+    from datetime import datetime, timedelta
+    
+    session_id = get_session_id()
+    all_contexts = load_all_contexts()
+    session_data = all_contexts.get(session_id, {})
+    
+    # compactフラグがTrueの場合
+    if session_data.get("is_compacted", False):
+        return True
+    
+    # セッション作成から5分以内の場合もcompact後と判定
+    if session_data.get("created_at"):
+        try:
+            created_at = datetime.fromisoformat(session_data["created_at"])
+            if datetime.now() - created_at < timedelta(minutes=5):
+                return True
+        except:
+            pass
+    
+    return False
+
 def get_recent_context():
-    """直近のコンテキストを取得"""
+    """直近のコンテキストを取得（compact後のセッションのみ）"""
     session_id = get_session_id()
     all_contexts = load_all_contexts()
     
     session_data = all_contexts.get(session_id, {})
+    
+    # recent_promptsが存在する場合にコンテキストを返す
     if session_data.get("recent_prompts"):
         context = "\n【直近の作業内容】\n"
         for i, prompt in enumerate(session_data["recent_prompts"][:3], 1):
@@ -155,19 +180,24 @@ def save_current_prompt(prompt_text):
         all_contexts[session_id] = {
             "recent_prompts": [],
             "created_at": datetime.now().isoformat(),
-            "last_access": datetime.now().isoformat()
+            "last_access": datetime.now().isoformat(),
+            "is_compacted": False
         }
     
     session_data = all_contexts[session_id]
     session_data["last_access"] = datetime.now().isoformat()
     
-    # 新しいプロンプトを追加（最大3件）
-    if prompt_text and "/compact" not in prompt_text.lower():
-        session_data["recent_prompts"].insert(0, prompt_text[:300])
-        session_data["recent_prompts"] = session_data["recent_prompts"][:3]
-        
-        # 全コンテキストを保存
-        save_all_contexts(all_contexts)
+    # compactコマンドの検出
+    if "/compact" in prompt_text.lower():
+        session_data["is_compacted"] = True
+    else:
+        # 新しいプロンプトを追加（最大3件）
+        if prompt_text:
+            session_data["recent_prompts"].insert(0, prompt_text[:300])
+            session_data["recent_prompts"] = session_data["recent_prompts"][:3]
+    
+    # 全コンテキストを保存
+    save_all_contexts(all_contexts)
 
 def load_explanation_mode_rules():
     """解説モードがアクティブな場合ルールを取得"""
@@ -217,7 +247,13 @@ def main():
         pass
 
     rules = get_workflow_rules()
-    context = get_recent_context()
+    
+    # コンテキストはcompact後のみ取得
+    if is_after_compact():
+        context = get_recent_context()
+    else:
+        context = ""
+    
     explanation_rules = load_explanation_mode_rules()
     
     # モードコマンドが実行された場合の追加指示
