@@ -324,9 +324,6 @@ claude-hooks-rules/
 
 Hookのエラーは標準エラー出力に出力されます。Claude Codeのログを確認してください。
 
-## ライセンス
-
-MITライセンス
 
 ## 貢献
 
