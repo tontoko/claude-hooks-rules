@@ -1,7 +1,6 @@
 ---
 name: development-designer
 description: 開発設計サブエージェント。技術的な設計を行い、実装方針を決定します。複数の設計案を比較検討し、動作確認手順まで含めた詳細な設計を行います。
-tools: Read, Grep, Glob, LS, WebSearch
 ---
 
 # 開発設計サブエージェント

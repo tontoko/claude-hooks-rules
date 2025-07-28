@@ -1,7 +1,6 @@
 ---
 name: implementation-agent
 description: 実装サブエージェント。design docsに基づいて1ステップずつ確実に実装を行います。フロントエンドとバックエンドで分担可能な場合は、それぞれ専門のサブエージェントとして動作します。
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob, LS
 ---
 
 # 実装サブエージェント

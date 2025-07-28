@@ -1,7 +1,6 @@
 ---
 name: requirement-analyzer
 description: 要件理解・分解サブエージェント。ユーザーの要件を分析し、実装可能なステップに分解します。複数の実装アプローチを検討し、PR単位で分割可能な計画を作成します。
-tools: Read, Grep, Glob, LS, WebSearch
 ---
 
 # 要件理解・分解サブエージェント
