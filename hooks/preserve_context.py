@@ -100,25 +100,37 @@ def main():
     # PreCompact イベントデータを読み込む
     try:
         event = json.load(sys.stdin)
-    except:
-        print("Error parsing input", file=sys.stderr)
+    except Exception as e:
+        print(f"Error parsing input: {e}", file=sys.stderr)
         sys.exit(1)
     
     transcript_path = event.get('transcript_path', '')
     trigger = event.get('trigger', 'unknown')
     custom_instructions = event.get('custom_instructions', '')
     
-    # 直近のプロンプトを抽出して保存
-    recent_prompts = extract_recent_prompts(transcript_path)
-    save_context(recent_prompts)
-    
-    # ユーザーへのメッセージ
-    print(f"\n[PreCompact] トリガー: {trigger}")
-    print(f"直近の{len(recent_prompts)}件の指示を保存しました。")
-    print("Compact実行後も作業を継続できます。")
-    
-    if custom_instructions:
-        print(f"\nカスタム指示: {custom_instructions}")
+    try:
+        # 直近のプロンプトを抽出して保存
+        recent_prompts = extract_recent_prompts(transcript_path)
+        save_context(recent_prompts)
+        
+        # ユーザーへのメッセージ
+        print(f"\n[PreCompact] トリガー: {trigger}")
+        print(f"直近の{len(recent_prompts)}件の指示を保存しました。")
+        print("Compact実行後も作業を継続できます。")
+        
+        if custom_instructions:
+            print(f"\nカスタム指示: {custom_instructions}")
+        
+        # デバッグ情報（簡潔に）
+        if recent_prompts:
+            print(f"\n保存したコンテキストの一部:")
+            for i, prompt in enumerate(recent_prompts[:2], 1):
+                print(f"  {i}. {prompt[:50]}...")
+        
+    except Exception as e:
+        print(f"Error in PreCompact processing: {e}", file=sys.stderr)
+        print("\n[PreCompact] ［エラー発生］")
+        print("コンテキスト保存に失敗しましたが、処理を継続します。")
     
     sys.exit(0)
 

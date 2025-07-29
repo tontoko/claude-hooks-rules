@@ -17,6 +17,12 @@ def get_workflow_rules():
 
 あなたはメインオーケストレーターとして動作します。**自分でコードを読んだり書いたりすることは一切せず**、タスクの種類に応じて適切にサブエージェントを呼び出し、その結果を統合してユーザーに報告します。
 
+**【タスク判定ガイドライン】**
+開発フローを適用するか判断に迷った場合は、以下を参考にしてユーザーに明示してください：
+- "新機能を実装"、"改修"、"機能追加" → 開発フロー適用
+- "バグ修正"、"調査"、"テストのみ" → 必要なエージェントのみ使用
+- 不明な場合はユーザーに確認してから進める
+
 ### タスクの種類と対応方法
 
 #### 1. 新規開発・改修の場合
@@ -217,42 +223,56 @@ def save_all_contexts(data):
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 def is_after_compact():
-    """compact後のセッションかどうかを判定"""
+    """compact後のセッションかどうかを判定（エラーハンドリング強化）"""
     from datetime import datetime, timedelta
     
-    session_id = get_session_id()
-    all_contexts = load_all_contexts()
-    session_data = all_contexts.get(session_id, {})
-    
-    # compactフラグがTrueの場合
-    if session_data.get("is_compacted", False):
-        return True
-    
-    # セッション作成から5分以内の場合もcompact後と判定
-    if session_data.get("created_at"):
-        try:
-            created_at = datetime.fromisoformat(session_data["created_at"])
-            if datetime.now() - created_at < timedelta(minutes=5):
-                return True
-        except:
-            pass
-    
-    return False
+    try:
+        session_id = get_session_id()
+        all_contexts = load_all_contexts()
+        session_data = all_contexts.get(session_id, {})
+        
+        # compactフラグがTrueの場合
+        if session_data.get("is_compacted", False):
+            return True
+        
+        # セッション作成から5分以内の場合もcompact後と判定
+        if session_data.get("created_at"):
+            try:
+                created_at = datetime.fromisoformat(session_data["created_at"])
+                if datetime.now() - created_at < timedelta(minutes=5):
+                    return True
+            except Exception as e:
+                # 日付解析エラーでも継続
+                print(f"Warning: Date parsing error in is_after_compact: {e}", file=sys.stderr)
+        
+        return False
+    except Exception as e:
+        # 予期せぬエラーが発生しても継続
+        print(f"Error in is_after_compact: {e}", file=sys.stderr)
+        return False
 
 def get_recent_context():
-    """直近のコンテキストを取得（compact後のセッションのみ）"""
-    session_id = get_session_id()
-    all_contexts = load_all_contexts()
-    
-    session_data = all_contexts.get(session_id, {})
-    
-    # recent_promptsが存在する場合にコンテキストを返す
-    if session_data.get("recent_prompts"):
-        context = "\n【直近の作業内容】\n"
-        for i, prompt in enumerate(session_data["recent_prompts"][:3], 1):
-            context += f"{i}. {prompt}\n"
-        return context
-    return ""
+    """直近のコンテキストを取得（compact後のセッションのみ、安全性向上）"""
+    try:
+        session_id = get_session_id()
+        all_contexts = load_all_contexts()
+        
+        session_data = all_contexts.get(session_id, {})
+        
+        # recent_promptsが存在する場合にコンテキストを返す
+        recent_prompts = session_data.get("recent_prompts", [])
+        if recent_prompts:
+            context = "\n【直近の作業内容】\n"
+            for i, prompt in enumerate(recent_prompts[:3], 1):
+                # 各プロンプトの安全性チェック
+                if prompt and isinstance(prompt, str):
+                    context += f"{i}. {prompt}\n"
+            return context
+        return ""
+    except Exception as e:
+        # エラー時も空文字列を返して継続
+        print(f"Error in get_recent_context: {e}", file=sys.stderr)
+        return ""
 
 def save_current_prompt(prompt_text):
     """現在のプロンプトを保存"""
@@ -335,9 +355,14 @@ def main():
 
     rules = get_workflow_rules()
     
-    # コンテキストはcompact後のみ取得
-    if is_after_compact():
+    # コンテキストはcompact後のみ取得（デバッグ情報付き）
+    is_compact_session = is_after_compact()
+    if is_compact_session:
         context = get_recent_context()
+        # compact後セッション情報をユーザーに表示
+        compact_info = "\n【Compact後セッション検出】\n" + \
+                      "過去のコンテキストが復元され、開発ルールが適用されます。\n"
+        context = compact_info + context
     else:
         context = ""
     
