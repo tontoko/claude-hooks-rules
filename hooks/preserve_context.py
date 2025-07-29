@@ -82,7 +82,8 @@ def save_context(recent_prompts):
     all_contexts[session_id].update({
         "recent_prompts": recent_prompts,
         "saved_at": datetime.now().isoformat(),
-        "last_access": datetime.now().isoformat()
+        "last_access": datetime.now().isoformat(),
+        "is_compacted": True
     })
     
     # 最新100セッションのみ保持

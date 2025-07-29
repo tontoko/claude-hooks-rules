@@ -33,6 +33,16 @@
           }
         ]
       }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /Users/user-name/claude-hooks-rules/hooks/subagent_result_enforcer.py"
+          }
+        ]
+      }
     ]
   },
   "user_hooks": {

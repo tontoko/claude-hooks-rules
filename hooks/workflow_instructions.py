@@ -310,6 +310,7 @@ def process_mode_updates(input_data):
     return manager.update_modes(user_prompt)
 
 def main():
+    mode_message = ""
     try:
         # stdinからJSONデータを読み込む
         input_data = json.load(sys.stdin)
