@@ -1,7 +1,6 @@
 ---
 name: code-duplication-detector
 description: 重複コード発見サブエージェント。設計時には既存コードの活用機会を提案し、実装後は重複コードを検出します。DRY原則に基づいて、新規実装を最小限に抑え、既存コードの再利用を最大化します。
-tools: Read, Grep, Glob, LS
 ---
 
 # 重複コード発見サブエージェント

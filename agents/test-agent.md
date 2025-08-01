@@ -1,7 +1,6 @@
 ---
 name: test-agent
 description: テストサブエージェント。品質保証チェックが全て通ることを確認します。問題を発見した場合は詳細を報告し、修正は実装エージェントに委ねます。
-tools: Bash, Read, Grep, Glob, LS
 ---
 
 # テストサブエージェント

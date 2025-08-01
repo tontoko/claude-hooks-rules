@@ -1,7 +1,6 @@
 ---
 name: design-docs-creator
 description: design docs作成サブエージェント。要件分析と技術設計を基に、包括的な設計ドキュメントを作成します。実装者が迷わないレベルの詳細度で記述し、PR分割計画も含めます。
-tools: Read, Write, LS
 ---
 
 # Design Docs作成サブエージェント
