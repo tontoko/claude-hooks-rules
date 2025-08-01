@@ -1,23 +1,18 @@
-# Claude Code Hooks Rules
+# Claude Code / Open Code Agent Rules
 
-Claude Codeの動作を改善するためのHookスクリプト集です。メインオーケストレーターとしてClaude Codeを拡張し、専門的なサブエージェントと連携して開発作業を効率化します。
+Claude CodeとOpen Codeで使用できるメインオーケストレーター設定とサブエージェント定義集です。AIをメインオーケストレーターとして動作させ、専門的なサブエージェントと連携して開発作業を効率化します。
 
 ## 機能
 
 ### 1. メインオーケストレーターシステム
 Claude Codeをメインオーケストレーターとして動作させ、**自身はコードを直接読み書きせず**、専門的なサブエージェントに作業を委譲します。
 
-### 2. コンテキストの保持
-- 直近3件のユーザー指示を常に記録
-- /compact実行後はコンテキストを自動的に復元
-- Compact Summary実行後も作業内容を忘れない
-- セッション別にコンテキストを管理
+### 2. 専門的なサブエージェントシステム
+- 8種類の専門エージェントが特定のタスクを担当
+- 開発フローに従った体系的な開発プロセス
+- タスクに応じた柔軟なエージェント選択
 
-### 3. コードレビューの促進
-- 機能完成時に俯瞰的な視点でのレビューを促す
-- 冗長なコードや改善可能な設計を指摘
-
-### 4. カスタムサブエージェントシステム
+### 3. カスタムサブエージェントシステム
 
 #### 概要
 Claude Codeをメインオーケストレーターとして動作させ、専門的なタスクはサブエージェントに委譲するシステムです。サブエージェントはMarkdown形式（.md）で定義され、Claude CodeのTask toolを通じて呼び出されます。
@@ -156,45 +151,47 @@ Task(
 ```
 → 必要なエージェントのみが選択的に起動
 
-### 5. モード管理システム
-
-統一的なモード管理システムで、複数のモードを同時に有効化できます。
-
-#### モードの操作
-
-```
-# モードを有効化（既存のモードを置き換え）
-mode: explain
-mode: explain debug test
-
-# モードを追加（既存のモードに追加）
-mode on: explain
-mode on: debug test
-
-# モードを無効化（特定のモードのみ）
-mode off: explain
-mode off: debug test
-
-# すべてのモードを無効化
-mode: off
-mode clear
-mode reset
-
-# 現在のモードを確認
-mode list
-mode status
-```
-
-#### 利用可能なモード
-
-##### 解説モード (explain/explanation)
-- コード編集時に初心者向けの解説ドキュメントを自動生成
-- `docs/code-explanation/`ディレクトリに保存
-- なぜその実装方法を選んだか、設計の意図を記録
-
-### 6. 図表作成ルール
+### 4. 図表作成ルール
 
 すべてのサブエージェントが図を作成する際は、**必ずMermaid.js**を使用します。フローチャート、シーケンス図、クラス図、ER図など、あらゆる図表はMermaid.js形式で記述されます。
+
+## Open Code対応
+
+このプロジェクトはClaude CodeだけでなくOpen Codeにも対応しています。
+
+### Open Codeでの使用方法
+
+1. **AGENTS.mdの設定**
+   - AGENTS.mdはCLAUDE.mdのシンボリックリンクとして既に設定済みです
+   - 追加の設定は不要でそのまま使用できます
+
+2. **サブエージェントの配置**
+   - Open Codeでサブエージェントを使用する場合は`.opencode/agent/`ディレクトリにコピーしてください：
+   ```bash
+   mkdir -p .opencode/agent
+   cp agents/*.md .opencode/agent/
+   ```
+
+3. **設定ファイル（オプション）**
+   - 必要に応じて`opencode.json`を作成できます：
+   ```json
+   {
+     "agents": {
+       "default": {
+         "model": "claude-3-5-sonnet-20241022"
+       }
+     },
+     "instructions": [
+       "./AGENTS.md"
+     ]
+   }
+   ```
+
+### Claude CodeとOpen Codeの互換性
+
+- **CLAUDE.md / AGENTS.md**: 完全互換（シンボリックリンクで対応）
+- **サブエージェント**: 同じMarkdown形式で互換性あり
+- **設定形式**: 両方ともJSON形式で類似の構造
 
 ## インストール
 
@@ -204,33 +201,23 @@ git clone https://github.com/your-username/claude-hooks-rules.git
 cd claude-hooks-rules
 ```
 
-### 2. スクリプトに実行権限を付与
-```bash
-chmod +x hooks/*.py
-```
-
-### 3. Claude Code設定ファイルの更新
-
-`example.settings.json`の内容を参考に、`~/.claude/settings.json`を編集します：
+### 2. CLAUDE.mdまたはAGENTS.mdを配置
 
 ```bash
-# 設定ファイルを開く
-open ~/.claude/settings.json
+# Claude Code用
+cp CLAUDE.md /path/to/your/project/
 
-# または、提供されている設定をコピー（パスを自分の環境に合わせて修正）
-cp example.settings.json ~/.claude/settings.json
+# Open Code用（シンボリックリンクとして作成済み）
+# AGENTS.md -> CLAUDE.md
 ```
 
-**重要**: `example.settings.json`内のパスを自分の環境に合わせて修正してください：
-- `/Users/user-name/` → `/Users/あなたのユーザー名/`
+### 3. 使用開始
 
-### 4. Claude Codeを再起動
-
-設定を反映させるために、Claude Codeを再起動してください。
+Claude CodeまたはOpen Codeを起動すると、自動的に設定が読み込まれます。
 
 ## 使い方
 
-通常通りClaude Codeを使用するだけで、以下が自動的に適用されます：
+Claude CodeまたはOpen Codeを使用すると、以下が自動的に適用されます：
 
 ### オーケストレーターの動作例
 
@@ -246,26 +233,19 @@ cp example.settings.json ~/.claude/settings.json
    ```
    → 開発フローは適用されず、general-purposeエージェントまたは適切な専門エージェントを使用します
 
-3. **Compact後のコンテキスト保持テスト**
+3. **バグ修正の場合**
    ```
-   1. 何か指示を出す
-   2. /compact を実行
-   3. 「続きをやって」と指示
+   ログイン時のエラーを修正して
    ```
-   → compact前の指示を覚えています
+   → 必要なエージェントのみが選択的に起動します
 
 ## ファイル構成
 
 ```
 claude-hooks-rules/
 ├── README.md                         # このファイル
-├── example.settings.json             # Claude Code設定ファイルのサンプル
-├── hooks/
-│   ├── workflow_instructions.py      # メインオーケストレーターのルール定義とコンテキスト管理
-│   ├── preserve_context.py           # PreCompact時のコンテキスト保存
-│   ├── review_reminder.py            # コードレビューリマインダー
-│   ├── code_explainer.py             # 解説モード
-│   └── mode_manager.py               # 統一モード管理システム
+├── CLAUDE.md                         # メインオーケストレーター設定
+├── AGENTS.md                         # CLAUDE.mdへのシンボリックリンク（Open Code用）
 └── agents/                           # サブエージェント定義（Markdown形式）
     ├── requirement-analyzer.md       # 要件分析エージェント
     ├── development-designer.md       # 開発設計エージェント
@@ -281,32 +261,17 @@ claude-hooks-rules/
 
 ### ワークフロールールの変更
 
-`hooks/workflow_instructions.py`の`get_workflow_rules()`関数を編集して、開発フローや動作ルールを変更できます。
+`CLAUDE.md`（またはOpen Codeの場合は`AGENTS.md`）を編集して、開発フローや動作ルールを変更できます。
 
 ### 新しいサブエージェントの追加
 
 1. `agents/`ディレクトリに新しい`.md`ファイルを作成
 2. YAMLフロントマターでエージェントのメタデータを定義
 3. エージェントの責務と動作を記述
-4. workflow_instructions.pyに必要に応じて呼び出しルールを追加
-
-### 保存する指示の件数変更
-
-デフォルトでは直近3件の指示を保存しますが、以下のファイルで変更可能です：
-- `workflow_instructions.py`: `save_current_prompt()`関数内の`[:3]`
-- `preserve_context.py`: `extract_recent_prompts()`関数の`count`パラメータ
+4. CLAUDE.mdに必要に応じて呼び出しルールを追加
 
 
 ## トラブルシューティング
-
-### Hookが動作しない場合
-
-1. Claude Codeを再起動したか確認
-2. スクリプトに実行権限があるか確認：
-   ```bash
-   ls -la hooks/
-   ```
-3. パスが正しいか確認：設定ファイル内のパスが実際のファイルパスと一致しているか
 
 ### サブエージェントが呼び出されない場合
 
@@ -314,15 +279,9 @@ claude-hooks-rules/
 2. サブエージェント名が正しいか確認（例：`/requirement-analyzer`）
 3. Markdown形式のエージェント定義ファイルが存在するか確認
 
-### コンテキストが保持されない場合
-
-1. `~/.claude/hook_contexts.json`ファイルが作成されているか確認
-2. セッションIDが正しく取得されているか確認
-3. ファイルの書き込み権限があるか確認
-
 ### エラーログの確認
 
-Hookのエラーは標準エラー出力に出力されます。Claude Codeのログを確認してください。
+Claude CodeまたはOpen Codeのログを確認してください。
 
 
 ## 貢献
