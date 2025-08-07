@@ -1,31 +1,31 @@
 # Claude Code / Open Code Agent Rules
 
-Claude CodeとOpen Codeで使用できるメインオーケストレーター設定とサブエージェント定義集です。AIをメインオーケストレーターとして動作させ、専門的なサブエージェントと連携して開発作業を効率化します。
+A collection of main orchestrator settings and sub-agent definitions that can be used with Claude Code and Open Code. Operates AI as the main orchestrator, collaborating with specialized sub-agents to streamline development work.
 
-## 機能
+## Features
 
-### 1. メインオーケストレーターシステム
-Claude Codeをメインオーケストレーターとして動作させ、**自身はコードを直接読み書きせず**、専門的なサブエージェントに作業を委譲します。
+### 1. Main Orchestrator System
+Operates Claude Code as the main orchestrator, **without directly reading or writing code itself**, delegating work to specialized sub-agents.
 
-### 2. 専門的なサブエージェントシステム
-- 8種類の専門エージェントが特定のタスクを担当
-- 開発フローに従った体系的な開発プロセス
-- タスクに応じた柔軟なエージェント選択
+### 2. Specialized Sub-Agent System
+- 8 types of specialized agents handle specific tasks
+- Systematic development process following development flow
+- Flexible agent selection according to tasks
 
-### 3. カスタムサブエージェントシステム
+### 3. Custom Sub-Agent System
 
-#### 概要
-Claude Codeをメインオーケストレーターとして動作させ、専門的なタスクはサブエージェントに委譲するシステムです。サブエージェントはMarkdown形式（.md）で定義され、Claude CodeのTask toolを通じて呼び出されます。
+#### Overview
+A system that operates Claude Code as the main orchestrator and delegates specialized tasks to sub-agents. Sub-agents are defined in Markdown format (.md) and invoked through Claude Code's Task tool.
 
-#### メインオーケストレーターの動作原則
-1. **タスク受信**: ユーザーからのリクエストを受け取る
-2. **タスク分類**: タスクの性質を判断（新規開発・改修 or その他）
-3. **エージェント呼び出し**: Task toolを使用してサブエージェントを起動
-4. **並列実行**: 可能な場合はTask toolで複数のサブエージェントを呼び出す
-5. **結果統合**: 各エージェントからの報告を統合
-6. **最終レスポンス**: ユーザーに総合的な結果を返す
+#### Main Orchestrator Operating Principles
+1. **Task Reception**: Receive requests from users
+2. **Task Classification**: Determine task nature (new development/modification or other)
+3. **Agent Invocation**: Launch sub-agents using Task tool
+4. **Parallel Execution**: Invoke multiple sub-agents with Task tool when possible
+5. **Result Integration**: Integrate reports from each agent
+6. **Final Response**: Return comprehensive results to user
 
-#### 実装されているサブエージェント（8種類）
+#### Implemented Sub-Agents (8 Types)
 
 ##### 1. 要件分析エージェント (/requirement-analyzer)
 - **責務**: ユーザー要件の分析と明確化
@@ -89,29 +89,29 @@ Claude Codeをメインオーケストレーターとして動作させ、専門
   - UI操作の検証
   - スクリーンショット取得
 
-#### 開発フローの説明（workflow_instructions.pyで定義）
+#### Development Flow Description (defined in workflow_instructions.py)
 
-##### 1. 新規開発・改修の場合
-以下の開発フローを順番に実行します：
+##### 1. For New Development/Modification
+Execute the following development flow in order:
 
-1. **要件理解・分解** → `/requirement-analyzer`
-2. **開発設計** → `/development-designer`
-3. **重複コード発見** → `/code-duplication-detector`
-4. **design docs作成** → `/design-docs-creator` （ユーザー承認必須）
-5. **実装** → `/implementation-agent`
-6. **コードレビュー** → `/code-reviewer`
-7. **重複コード再確認** → `/code-duplication-detector`
-8. **テスト** → `/test-agent`
-9. **UI動作確認** → `/playwright-mcp-verifier` （必要時のみ）
+1. **Requirements Understanding & Decomposition** → `/requirement-analyzer`
+2. **Development Design** → `/development-designer`
+3. **Code Duplication Detection** → `/code-duplication-detector`
+4. **Design Docs Creation** → `/design-docs-creator` (User approval required)
+5. **Implementation** → `/implementation-agent`
+6. **Code Review** → `/code-reviewer`
+7. **Code Duplication Re-check** → `/code-duplication-detector`
+8. **Testing** → `/test-agent`
+9. **UI Operation Verification** → `/playwright-mcp-verifier` (When necessary only)
 
-##### 2. その他のタスクの場合
-**開発フローは適用されません**。タスクの性質に応じて、以下のように対応します：
+##### 2. For Other Tasks
+**Development flow does not apply**. Respond according to task nature as follows:
 
-- **実装調査・コード解析**: `general-purpose`エージェントを使用
-- **バグ修正**: `/code-reviewer` で問題箇所を特定し、`/implementation-agent` で修正
-- **リファクタリング**: `/code-duplication-detector` と `/code-reviewer` を活用
-- **テストのみ**: `/test-agent` を直接使用
-- **その他の作業**: 8つの専門エージェントで対応できない場合は、`general-purpose`エージェントを使用
+- **Implementation Investigation/Code Analysis**: Use `general-purpose` agent
+- **Bug Fixes**: Identify problem areas with `/code-reviewer`, fix with `/implementation-agent`
+- **Refactoring**: Utilize `/code-duplication-detector` and `/code-reviewer`
+- **Testing Only**: Use `/test-agent` directly
+- **Other Work**: Use `general-purpose` agent when 8 specialized agents cannot handle
 
 **重要**: その他のタスクでも、可能な限り作業はサブエージェントに委譲し、自分でコードを読み書きすることは避けてください。
 

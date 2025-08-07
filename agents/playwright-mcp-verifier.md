@@ -15,7 +15,7 @@ description: Playwright MCP動作確認サブエージェント。UI上での動
 - MCPを使用しない場合はエラーとして扱います
 - Playwright MCPが利用できない場合はその旨を明確に報告すること
 
-## 主な責務
+## Primary Responsibilities
 
 1. **UI動作確認の実行**
    - design docsに記載された動作確認手順の実施

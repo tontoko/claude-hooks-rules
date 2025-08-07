@@ -1,79 +1,79 @@
-# サブエージェント一覧
+# Sub-Agent List
 
-本プロジェクトで実装されているサブエージェントの一覧と概要です。
+This is a list and overview of sub-agents implemented in this project.
 
 ## 1. requirement-analyzer
-要件理解・分解サブエージェント。ユーザーの要件を分析し、実装可能なステップに分解します。
+Requirements understanding and decomposition sub-agent. Analyzes user requirements and breaks them down into implementable steps.
 
-- 機能要件と非機能要件の整理
-- 制約事項と前提条件の明確化
-- 実装スコープの定義
+- Organization of functional and non-functional requirements
+- Clarification of constraints and prerequisites
+- Definition of implementation scope
 
 ## 2. development-designer
-開発設計サブエージェント。技術的な設計を行い、実装方針を決定します。
+Development design sub-agent. Performs technical design and determines implementation approaches.
 
-- アーキテクチャ設計
-- 技術スタックの選定
-- データモデルとAPI設計
+- Architecture design
+- Technology stack selection
+- Data model and API design
 
 ## 3. code-duplication-detector
-重複コード発見サブエージェント。既存コードの活用機会を提案し、DRY原則を推進します。
+Code duplication detection sub-agent. Proposes opportunities to utilize existing code and promotes DRY principles.
 
-- 設計段階での既存コード活用提案（1回目）
-- 実装後の重複コード検出（2回目）
-- 共通化とリファクタリングの提案
+- Existing code utilization proposals during design phase (1st time)
+- Code duplication detection after implementation (2nd time)
+- Proposals for common code extraction and refactoring
 
 ## 4. design-docs-creator
-design docs作成サブエージェント。包括的な設計ドキュメントを作成します。
+Design documentation creation sub-agent. Creates comprehensive design documents.
 
-- 詳細設計書の作成
-- 実装計画（実装単位への分割）の策定
-- PR分割計画の立案
-- 実装者が迷わないレベルの詳細度
+- Creation of detailed design documents
+- Development of implementation plans (division into implementation units)
+- Planning of PR division strategy
+- Detailed specifications at a level where implementers won't get confused
 
 ## 5. implementation-agent
-実装サブエージェント。design docsに基づく1ステップずつ確実な実装を行います。
+Implementation sub-agent. Performs reliable step-by-step implementation based on design docs.
 
-- design docsに従った実装
-- 実装単位（300-500行）ごとの実装
-- フロントエンドとバックエンドの実装
+- Implementation following design docs
+- Implementation by units (300-500 lines each)
+- Frontend and backend implementation
 
 ## 6. implementation-validator
-実装検証サブエージェント。実装の完全性と品質を段階的に検証します。
+Implementation validation sub-agent. Validates implementation completeness and quality step by step.
 
-- TODO/FIXMEコメントの検出
-- モック実装の検出
-- 未実装関数や空実装の発見
-- ハードコード値の検出
-- 実装品質の段階的保証
+- Detection of TODO/FIXME comments
+- Detection of mock implementations
+- Discovery of unimplemented functions and empty implementations
+- Detection of hardcoded values
+- Step-by-step quality assurance
 
 ## 7. code-reviewer
-コードレビューサブエージェント。実装されたコードの品質をチェックし、改善提案を行います。
+Code review sub-agent. Checks the quality of implemented code and provides improvement suggestions.
 
-- コード品質の評価
-- セキュリティチェック
-- パフォーマンス最適化提案
-- ベストプラクティスの確認
+- Code quality evaluation
+- Security checks
+- Performance optimization suggestions
+- Best practices verification
 
 ## 8. test-agent
-テストサブエージェント。品質保証チェックが全て通ることを確認します。
+Test sub-agent. Confirms that all quality assurance checks pass.
 
-- 単体テストの実行
-- 統合テストの実行
-- カバレッジ測定
-- テスト結果の報告
+- Unit test execution
+- Integration test execution
+- Coverage measurement
+- Test result reporting
 
 ## 9. playwright-mcp-verifier
-UI動作確認サブエージェント。Playwright MCPを使用してUIの動作確認を行います。
+UI operation verification sub-agent. Performs UI operation verification using Playwright MCP.
 
-- E2Eテストの実行
-- UI動作の自動確認
-- 環境エラーの検出
-- 動作確認レポートの生成
+- E2E test execution
+- Automated UI operation verification
+- Environment error detection
+- Operation verification report generation
 
-## サブエージェントの使用ルール
+## Sub-Agent Usage Rules
 
-1. **呼び出し権限**: メインオーケストレーターのみがサブエージェントを呼び出し可能
-2. **相互呼び出し禁止**: サブエージェント間での直接呼び出しは不可
-3. **Task tool使用**: 全てのサブエージェント呼び出しはTask toolを使用
-4. **図表作成**: 全てのサブエージェントはMermaid.jsを使用して図表を作成
+1. **Invocation Authority**: Only the main orchestrator can invoke sub-agents
+2. **Inter-Agent Invocation Prohibition**: Direct invocation between sub-agents is not allowed
+3. **Task Tool Usage**: All sub-agent invocations must use the Task tool
+4. **Chart Creation**: All sub-agents must use Mermaid.js to create charts and diagrams
